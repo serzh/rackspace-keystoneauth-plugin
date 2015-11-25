@@ -23,7 +23,7 @@ class TestRackspaceauth(unittest2.TestCase):
         user = "monterey"
         key = "jack"
 
-        auth = v2.APIKey(username=user, key=key)
+        auth = v2.APIKey(username=user, api_key=key)
         data = auth.get_auth_data()
 
         creds = data["RAX-KSKEY:apiKeyCredentials"]
