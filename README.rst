@@ -19,7 +19,7 @@ as found in his `control panel <https://mycloud.rackspace.com/>`_. ::
     from keystoneauth1 import session
 
     auth = v2.APIKey(username="Mayor McCheese",
-                     key="OMGCHEESEISGREAT")
+                     api_key="OMGCHEESEISGREAT")
 
     sess = session.Session(auth=auth)
     sess.get_token()
