@@ -32,7 +32,7 @@ AUTH_URL = "https://identity.api.rackspacecloud.com/v2.0/"
 
 class APIKey(v2.Auth):
 
-    def __init__(self, username=None, key=None, reauthenticate=True,
+    def __init__(self, username=None, api_key=None, reauthenticate=True,
                  auth_url=AUTH_URL):
         """A plugin for authenticating with a username and API key
 
@@ -44,12 +44,12 @@ class APIKey(v2.Auth):
         super(APIKey, self).__init__(auth_url, reauthenticate=reauthenticate)
 
         self.username = username
-        self.key = key
+        self.api_key = api_key
         self.auth_url = auth_url
 
     def get_auth_data(self, headers=None):
         return {"RAX-KSKEY:apiKeyCredentials":
-                {"username": self.username, "apiKey": self.key}}
+                {"username": self.username, "apiKey": self.api_key}}
 
 
 class Password(v2.Auth):
