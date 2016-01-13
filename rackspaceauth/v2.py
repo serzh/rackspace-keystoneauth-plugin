@@ -30,7 +30,21 @@ from keystoneauth1.identity import v2
 AUTH_URL = "https://identity.api.rackspacecloud.com/v2.0/"
 
 
-class APIKey(v2.Auth):
+class RackspaceAuth(v2.Auth):
+
+    def get_endpoint(self, session, service_type=None, interface=None,
+                     region_name=None, service_name=None, version=None,
+                     **kwargs):
+        endpoint = super(RackspaceAuth, self).get_endpoint(
+            session, service_type, interface, region_name, service_name,
+            version, **kwargs
+        )
+        if service_type == 'network':
+            endpoint = endpoint.strip('/v2.0')
+        return endpoint
+
+
+class APIKey(RackspaceAuth):
 
     def __init__(self, username=None, api_key=None, reauthenticate=True,
                  auth_url=AUTH_URL):
@@ -52,7 +66,7 @@ class APIKey(v2.Auth):
                 {"username": self.username, "apiKey": self.api_key}}
 
 
-class Password(v2.Auth):
+class Password(RackspaceAuth):
 
     def __init__(self, username=None, password=None, reauthenticate=True,
                  auth_url=AUTH_URL):
@@ -74,7 +88,7 @@ class Password(v2.Auth):
                 "username": self.username, "password": self.password}}
 
 
-class Token(v2.Auth):
+class Token(RackspaceAuth):
 
     def __init__(self, tenant_id=None, token=None,
                  auth_url=AUTH_URL):
