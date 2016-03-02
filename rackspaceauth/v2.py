@@ -47,7 +47,7 @@ class RackspaceAuth(v2.Auth):
 class APIKey(RackspaceAuth):
 
     def __init__(self, username=None, api_key=None, reauthenticate=True,
-                 auth_url=AUTH_URL):
+                 auth_url=AUTH_URL, **kwargs):
         """A plugin for authenticating with a username and API key
 
         :param str username: Username to authenticate with
@@ -69,7 +69,7 @@ class APIKey(RackspaceAuth):
 class Password(RackspaceAuth):
 
     def __init__(self, username=None, password=None, reauthenticate=True,
-                 auth_url=AUTH_URL):
+                 auth_url=AUTH_URL, **kwargs):
         """A plugin for authenticating with a username and password
 
         :param str username: Username to authenticate with
@@ -91,7 +91,7 @@ class Password(RackspaceAuth):
 class Token(RackspaceAuth):
 
     def __init__(self, tenant_id=None, token=None,
-                 auth_url=AUTH_URL):
+                 auth_url=AUTH_URL, **kwargs):
         """A plugin for authenticating with a username and password
 
         :param str tenant_id: Tenant ID to authenticate with
