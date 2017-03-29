@@ -23,3 +23,17 @@ as found in his `control panel <https://mycloud.rackspace.com/>`_. ::
 
     sess = session.Session(auth=auth)
     sess.get_token()
+
+To use in a
+`clouds.yaml <https://docs.openstack.org/developer/os-client-config/#config-files>`_
+file, for use with shade, ansible, os-client-config, and other tools, one might
+add a section like this::
+
+clouds:
+  rackspace-iad
+    profile: rackspace
+    auth:
+      username: mayor-mccheese
+      api_key: OMGCHEESEISGREAT
+    auth_type: rackspace_apikey
+    region_name: IAD
