@@ -29,11 +29,11 @@ To use in a
 file, for use with shade, ansible, os-client-config, and other tools, one might
 add a section like this::
 
-clouds:
-  rackspace-iad
-    profile: rackspace
-    auth:
-      username: mayor-mccheese
-      api_key: OMGCHEESEISGREAT
-    auth_type: rackspace_apikey
-    region_name: IAD
+    clouds:
+      rackspace-iad
+        profile: rackspace
+        auth:
+          username: mayor-mccheese
+          api_key: OMGCHEESEISGREAT
+        auth_type: rackspace_apikey
+        region_name: IAD
