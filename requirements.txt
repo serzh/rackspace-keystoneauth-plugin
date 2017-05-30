@@ -5,4 +5,5 @@
 # Keep these the same as upstream SDK
 pbr>=1.6
 keystoneauth1>=1.0.0
-requests!=2.8.0,>=2.5.2
+requests>=2.16.0
+urllib3

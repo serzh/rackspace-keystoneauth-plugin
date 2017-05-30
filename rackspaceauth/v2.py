@@ -22,8 +22,8 @@ Rackspace identity plugins.
 # soon to be unsupported. The Rackspace Identity team has been working on
 # a solution to this issue, and the environment is slated to be upgraded
 # by end of year 2015.
-import requests
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings()
 
 from keystoneauth1.identity import v2
 
