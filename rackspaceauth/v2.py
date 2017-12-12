@@ -30,6 +30,22 @@ from keystoneauth1.identity import v2
 AUTH_URL = "https://identity.api.rackspacecloud.com/v2.0/"
 
 
+def validate(session, token):
+    """Validate a token
+
+    :param session: An existing :class:`keystoneauth.session.Session`
+    :param str token: A token string
+    """
+    headers = {"X-Auth-Token": token}
+    response = session.get("%stokens/%s" % (AUTH_URL, token),
+                           headers=headers)
+    # If you're not allowed to validate, this will probably raise 403
+    # If you are and the token isn't valid, this will probably raise 404
+    response.raise_for_status()
+
+    return response.json()
+
+
 class RackspaceAuth(v2.Auth):
 
     def get_endpoint(self, session, service_type=None, interface=None,
