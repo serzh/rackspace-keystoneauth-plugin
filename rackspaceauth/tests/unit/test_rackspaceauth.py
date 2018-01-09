@@ -50,3 +50,17 @@ class TestRackspaceauth(unittest2.TestCase):
 
         self.assertEqual(data["tenantId"], tenant)
         self.assertEqual(data["token"]["id"], token)
+
+    def test_sso(self):
+        user = "plant"
+        password = "based"
+
+        auth = v2.SSO(username=user, password=password, internal=True)
+        data = auth.get_auth_data()
+
+        domain = data["RAX-AUTH:domain"]
+        self.assertEqual(domain["name"], "Rackspace")
+
+        creds = data["passwordCredentials"]
+        self.assertEqual(creds["username"], user)
+        self.assertEqual(creds["password"], password)
