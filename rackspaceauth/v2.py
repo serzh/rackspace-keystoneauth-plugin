@@ -14,6 +14,8 @@
 Rackspace identity plugins.
 """
 
+from deprecation import deprecated
+
 # NOTE: The following two lines disable warning messages coming out of the
 # urllib3 that is vendored by requests. This is currently necessary to
 # silence a warning about an issue with the certificate in our identity
@@ -69,6 +71,8 @@ class RackspaceAuth(v2.Auth):
 
 class APIKey(RackspaceAuth):
 
+    @deprecated(deprecated_in="0.7.0", removed_in="1.0",
+                details="The `auth_url` is no longer used. Use `internal`.")
     def __init__(self, username=None, api_key=None, reauthenticate=True,
                  auth_url=None, internal=False, **kwargs):
         """A plugin for authenticating with a username and API key
@@ -95,6 +99,8 @@ class APIKey(RackspaceAuth):
 
 class Password(RackspaceAuth):
 
+    @deprecated(deprecated_in="0.7.0", removed_in="1.0",
+                details="The `auth_url` is no longer used. Use `internal`.")
     def __init__(self, username=None, password=None, reauthenticate=True,
                  auth_url=None, internal=False, **kwargs):
         """A plugin for authenticating with a username and password
@@ -121,6 +127,8 @@ class Password(RackspaceAuth):
 
 class Token(RackspaceAuth):
 
+    @deprecated(deprecated_in="0.7.0", removed_in="1.0",
+                details="The `auth_url` is no longer used. Use `internal`.")
     def __init__(self, tenant_id=None, token=None,
                  auth_url=None, internal=False, **kwargs):
         """A plugin for authenticating with a username and password
