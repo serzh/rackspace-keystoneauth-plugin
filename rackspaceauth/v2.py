@@ -14,6 +14,8 @@
 Rackspace identity plugins.
 """
 
+from deprecation import deprecated
+
 # NOTE: The following two lines disable warning messages coming out of the
 # urllib3 that is vendored by requests. This is currently necessary to
 # silence a warning about an issue with the certificate in our identity
@@ -28,6 +30,29 @@ urllib3.disable_warnings()
 from keystoneauth1.identity import v2
 
 AUTH_URL = "https://identity.api.rackspacecloud.com/v2.0/"
+
+# This identity-internal endpoint only works behind the Rackspace VPN.
+# It's use is intended for internal Rackspace users, as it supports
+# authentication via employee SSO.
+INTERNAL_AUTH_URL = "https://identity-internal.api.rackspacecloud.com/v2.0/"
+
+
+def validate(session, token, internal=False):
+    """Validate a token
+
+    :param session: An existing :class:`keystoneauth.session.Session`
+    :param str token: A token string
+    :param bool internal: Use Rackspace internal auth if True, otherwise
+                          use public auth. *Default: False*
+    """
+    headers = {"X-Auth-Token": token}
+    url = AUTH_URL if not internal else INTERNAL_AUTH_URL
+    response = session.get("%stokens/%s" % (url, token), headers=headers)
+    # If you're not allowed to validate, this will probably raise 403
+    # If you are and the token isn't valid, this will probably raise 404
+    response.raise_for_status()
+
+    return response.json()
 
 
 class RackspaceAuth(v2.Auth):
@@ -46,15 +71,21 @@ class RackspaceAuth(v2.Auth):
 
 class APIKey(RackspaceAuth):
 
+    @deprecated(deprecated_in="0.7.0", removed_in="1.0",
+                details="The `auth_url` is no longer used. Use `internal`.")
     def __init__(self, username=None, api_key=None, reauthenticate=True,
-                 auth_url=AUTH_URL, **kwargs):
+                 auth_url=None, internal=False, **kwargs):
         """A plugin for authenticating with a username and API key
 
         :param str username: Username to authenticate with
         :param str key: API key to authenticate with
         :param bool reauthenticate: Allow fetching a new token if the current
                                     one is about to expire.
+        :param bool internal: Use Rackspace internal auth if True, otherwise
+                              use public auth. *Default: False*
         """
+        if auth_url is None:
+            auth_url = AUTH_URL if not internal else INTERNAL_AUTH_URL
         super(APIKey, self).__init__(auth_url, reauthenticate=reauthenticate)
 
         self.username = username
@@ -68,15 +99,21 @@ class APIKey(RackspaceAuth):
 
 class Password(RackspaceAuth):
 
+    @deprecated(deprecated_in="0.7.0", removed_in="1.0",
+                details="The `auth_url` is no longer used. Use `internal`.")
     def __init__(self, username=None, password=None, reauthenticate=True,
-                 auth_url=AUTH_URL, **kwargs):
+                 auth_url=None, internal=False, **kwargs):
         """A plugin for authenticating with a username and password
 
         :param str username: Username to authenticate with
         :param str password: Password to authenticate with
         :param bool reauthenticate: Allow fetching a new token if the current
                                     one is about to expire.
+        :param bool internal: Use Rackspace internal auth if True, otherwise
+                              use public auth. *Default: False*
         """
+        if auth_url is None:
+            auth_url = AUTH_URL if not internal else INTERNAL_AUTH_URL
         super(Password, self).__init__(auth_url, reauthenticate=reauthenticate)
 
         self.username = username
@@ -90,13 +127,19 @@ class Password(RackspaceAuth):
 
 class Token(RackspaceAuth):
 
+    @deprecated(deprecated_in="0.7.0", removed_in="1.0",
+                details="The `auth_url` is no longer used. Use `internal`.")
     def __init__(self, tenant_id=None, token=None,
-                 auth_url=AUTH_URL, **kwargs):
+                 auth_url=None, internal=False, **kwargs):
         """A plugin for authenticating with a username and password
 
         :param str tenant_id: Tenant ID to authenticate with
         :param str token: Token to authenticate with
+        :param bool internal: Use Rackspace internal auth if True, otherwise
+                              use public auth. *Default: False*
         """
+        if auth_url is None:
+            auth_url = AUTH_URL if not internal else INTERNAL_AUTH_URL
         super(Token, self).__init__(auth_url=auth_url, reauthenticate=False)
 
         self.tenant_id = tenant_id
@@ -105,3 +148,25 @@ class Token(RackspaceAuth):
     def get_auth_data(self, headers=None):
         return {"token": {"id": self.token},
                 "tenantId": self.tenant_id}
+
+
+class SSO(RackspaceAuth):
+
+    def __init__(self, username=None, password=None, internal=True, **kwargs):
+        """A plugin for authenticating with a username and password to SSO
+
+        :param str username: Username to authenticate with
+        :param str password: Password to authenticate with
+        :param bool internal: Use Rackspace internal auth if True, otherwise
+                              use public auth. *Default: True*
+        """
+        auth_url = AUTH_URL if not internal else INTERNAL_AUTH_URL
+        super(SSO, self).__init__(auth_url=auth_url, reauthenticate=False)
+
+        self.username = username
+        self.password = password
+
+    def get_auth_data(self, headers=None):
+        return {"RAX-AUTH:domain": {"name": "Rackspace"},
+                "passwordCredentials": {"username": self.username,
+                                        "password": self.password}}
